@@ -19,7 +19,7 @@ slim = tf.contrib.slim
 image_size = vgg.vgg_16.default_image_size
 
 names = os.listdir('test')
-name = 'test/' + names[0]
+name = 'test/' + names[17]
 with tf.Graph().as_default():
     
     image_string = misc.imread(name)
@@ -89,19 +89,24 @@ with tf.Graph().as_default():
         pred_prob.append(probabilities[index])
 
     plt.rcdefaults()
-    fig, ax = plt.subplots(nrows=1, ncols=3)
-    ax[0].imshow(np_image.astype(np.uint8))
-    ax[0].set_title('Downloaded')
-    ax[1].imshow( network_input[0] / (network_input.max() - network_input.min()) )
-    ax[1].set_title('Processed')
+    fig = plt.figure()
+    ax1 = plt.subplot2grid((2,2),(0,0))
+    ax2 = plt.subplot2grid((2,2),(0,1))
+    ax3 = plt.subplot2grid((2,2),(1,0), colspan=2)
+    ax1.imshow(np_image.astype(np.uint8))
+    ax1.set_title('Downloaded Image')
+    ax1.axis('off')
+    ax2.imshow( network_input[0] / (network_input.max() - network_input.min()) )
+    ax2.set_title('Processed Image')
+    ax2.axis('off')
 
     y_pos = np.arange(len(pred_class))
-    ax[2].barh(y_pos, pred_prob)
-    ax[2].set_yticks(y_pos)
-    ax[2].set_yticklabels(pred_class)
-    ax[2].invert_yaxis()
-    ax[2].set_xlabel('Probabilities')
-    ax[2].set_title('Top-5 Predictions')
+    ax3.barh(y_pos, pred_prob)
+    ax3.set_yticks(y_pos)
+    ax3.set_yticklabels(pred_class)
+    ax3.invert_yaxis()
+    ax3.set_xlabel('Probabilities')
+    ax3.set_title('Top-5 Predictions')
 
     plt.tight_layout()
     plt.show()
