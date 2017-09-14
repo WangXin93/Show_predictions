@@ -19,7 +19,7 @@ slim = tf.contrib.slim
 image_size = vgg.vgg_16.default_image_size
 
 names = os.listdir('test')
-name = 'test/' + names[7]
+name = 'test/' + names[9]
 with tf.Graph().as_default():
     
     image_string = misc.imread(name)
@@ -71,7 +71,23 @@ with tf.Graph().as_default():
         probabilities = probabilities[0, 0:]
         sorted_indx = [i[0] for i in sorted(enumerate(-probabilities),
                                                      key=lambda x:x[1])]
-        
+    
+    names = imagenet.create_readable_names_for_imagenet_labels()
+
+    pred_class = []
+    pred_prob = []
+
+    for i in range(5):
+        index = sorted_indx[i]
+        # Now we print the top-5 predictions that the network gives us with
+        # corresponding probabilities. Pay attention that the index with
+        # class names is shifted by 1 -- this is because some networks
+        # were trained on 1000 classes and others on 1001. VGG-16 was trained
+        # on 1000 classes.
+        print("Probability %0.2f => [%s]" % (probabilities[index], names[index+1]))
+        pred_class.append(names[index+1])
+        pred_prob.append(probabilities[index])
+
     plt.figure()
     plt.subplot(1,2,1)
     plt.imshow(np_image.astype(np.uint8))
@@ -89,14 +105,21 @@ with tf.Graph().as_default():
                  fontsize=14, fontweight='bold')
     plt.axis('off')
     plt.show()
-    
-    names = imagenet.create_readable_names_for_imagenet_labels()
-    
-    for i in range(5):
-        index = sorted_indx[i]
-        # Now we print the top-5 predictions that the network gives us with
-        # corresponding probabilities. Pay attention that the index with
-        # class names is shifted by 1 -- this is because some networks
-        # were trained on 1000 classes and others on 1001. VGG-16 was trained
-        # on 1000 classes.
-        print("Probability %0.2f => [%s]" % (probabilities[index], names[index+1]))
+
+    plt.rcdefaults()
+    fig, ax = plt.subplots()
+    y_pos = np.arange(len(pred_class))
+    ax.barh(y_pos, pred_prob)
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(pred_class)
+    ax.invert_yaxis()
+    ax.set_xlabel('Probabilities')
+    ax.set_title('Top-5 Predictions')
+
+    plt.show()
+
+
+
+
+
+
