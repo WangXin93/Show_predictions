@@ -19,7 +19,7 @@ slim = tf.contrib.slim
 image_size = vgg.vgg_16.default_image_size
 
 names = os.listdir('test')
-name = 'test/' + names[9]
+name = 'test/' + names[0]
 with tf.Graph().as_default():
     
     image_string = misc.imread(name)
@@ -88,34 +88,22 @@ with tf.Graph().as_default():
         pred_class.append(names[index+1])
         pred_prob.append(probabilities[index])
 
-    plt.figure()
-    plt.subplot(1,2,1)
-    plt.imshow(np_image.astype(np.uint8))
-    plt.title("Downloaded", fontsize=14, fontweight='bold')
-    plt.axis('off')
-    
-    # Show the image that is actually being fed to the network
-    # The image was resized while preserving aspect ratio and then
-    # cropped. After that, the mean pixel value was subtracted from
-    # each pixel of that crop. We normalize the image to be between [-1, 1]
-    # to show the image.
-    plt.subplot(1,2,2)
-    plt.imshow( network_input[0] / (network_input.max() - network_input.min()) )
-    plt.title("Resized, Cropped and Mean-Centered input to network",
-                 fontsize=14, fontweight='bold')
-    plt.axis('off')
-    plt.show()
-
     plt.rcdefaults()
-    fig, ax = plt.subplots()
-    y_pos = np.arange(len(pred_class))
-    ax.barh(y_pos, pred_prob)
-    ax.set_yticks(y_pos)
-    ax.set_yticklabels(pred_class)
-    ax.invert_yaxis()
-    ax.set_xlabel('Probabilities')
-    ax.set_title('Top-5 Predictions')
+    fig, ax = plt.subplots(nrows=1, ncols=3)
+    ax[0].imshow(np_image.astype(np.uint8))
+    ax[0].set_title('Downloaded')
+    ax[1].imshow( network_input[0] / (network_input.max() - network_input.min()) )
+    ax[1].set_title('Processed')
 
+    y_pos = np.arange(len(pred_class))
+    ax[2].barh(y_pos, pred_prob)
+    ax[2].set_yticks(y_pos)
+    ax[2].set_yticklabels(pred_class)
+    ax[2].invert_yaxis()
+    ax[2].set_xlabel('Probabilities')
+    ax[2].set_title('Top-5 Predictions')
+
+    plt.tight_layout()
     plt.show()
 
 
