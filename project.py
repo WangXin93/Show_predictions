@@ -3,7 +3,6 @@ import numpy as np
 import os
 import tensorflow as tf
 import urllib
-from scipy import misc
 
 from datasets import imagenet
 from nets import vgg
@@ -20,11 +19,11 @@ image_size = vgg.vgg_16.default_image_size
 
 names = os.listdir('test')
 name = 'test/' + names[17]
+
 with tf.Graph().as_default():
-    
-    image_string = misc.imread(name)
-    
-    image = tf.convert_to_tensor(image_string, np.float32)
+       
+    image_string = tf.read_file(name)
+    image = tf.image.decode_image(image_string)
     
     # Resize the input image, preserving the aspect ratio
     # and make a central crop of the resulted image.
